@@ -1,0 +1,24 @@
+{
+	"name": "diankego/yii2-sms",
+	"description": "yii2 sms",
+	"keywords": ["yii2", "sms"],
+	"type": "yii2-extension",
+	"license": "MIT",
+	"support": {
+		"issues": "https://github.com/xiewulong/yii2-sms/issues",
+		"wiki": "https://github.com/xiewulong/yii2-sms/wiki",
+		"source": "https://github.com/xiewulong/yii2-sms"
+	},
+	"authors": [
+		{
+			"name": "xiewulong",
+			"email": "xiewulong@vip.qq.com"
+		}
+	],
+	"require": {
+		"yiisoft/yii2": "*"
+	},
+	"autoload": {
+		"psr-4": {"yii\\sms\\": ""}
+	}
+}
