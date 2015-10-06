@@ -5,7 +5,7 @@
  * https://github.com/xiewulong/yii2-sms
  * https://raw.githubusercontent.com/xiewulong/yii2-sms/master/LICENSE
  * create: 2015/9/22
- * update: 2015/9/23
+ * update: 2015/10/6
  * version: 0.0.1
  */
 
@@ -43,7 +43,7 @@ class Manager{
 	 * @param {string} $content 短信内容
 	 * @param {number} $uid 操作者, 0系统, >0用户id
 	 * @return {boolean}
-	 * @example Yii::$app->sms->send($phone, $content, $uid);
+	 * @example \Yii::$app->sms->send($phone, $content, $uid);
 	 */
 	public function send($phone, $content, $uid = 0){
 		if(empty($phone) || empty($content)){
