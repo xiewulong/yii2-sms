@@ -130,7 +130,7 @@ class Luosimao {
 	 * 查询账户短信余量
 	 * @method getStatus
 	 * @since 0.0.1
-	 * @return {number}
+	 * @return {int}
 	 * @example $this->getStatus();
 	 */
 	public function getStatus() {
