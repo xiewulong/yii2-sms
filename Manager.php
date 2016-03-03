@@ -5,22 +5,22 @@
  * https://github.com/xiewulong/yii2-sms
  * https://raw.githubusercontent.com/xiewulong/yii2-sms/master/LICENSE
  * create: 2015/9/22
- * update: 2015/10/6
+ * update: 2016/3/3
  * version: 0.0.1
  */
 
 namespace yii\sms;
 
 use yii\base\ErrorException;
-use yii\sms\models\Sms;
 use yii\sms\apis\Luosimao;
+use yii\sms\models\Sms;
 
-class Manager{
+class Manager {
 
-	//短信服务商
-	public $mode;
+	//服务商
+	public $sp;
 
-	//接口配置
+	//配置
 	public $config;
 
 	//署名
@@ -29,63 +29,75 @@ class Manager{
 	//前缀, 默认后缀
 	public $pre = false;
 
-	//手机号
-	private $phone;
-
-	//短信内容
-	private $content;
+	//debug
+	public $dev = false;
 
 	/**
 	 * 发送
 	 * @method send
 	 * @since 0.0.1
-	 * @param {string} $phone 手机号
-	 * @param {string} $content 短信内容
-	 * @param {number} $uid 操作者, 0系统, >0用户id
+	 * @param {string} $mobile 移动号码, 多个以英文逗号隔开, <=10000个
+	 * @param {string} $content 内容, <=300个字(含签名)
+	 * @param {number} [$operator_id=0] 操作者, 0系统, >0用户id
+	 * @param {number} [$sent_at=0] 发送时间, 0立即, >0定时
 	 * @return {boolean}
-	 * @example \Yii::$app->sms->send($phone, $content, $uid);
+	 * @example \Yii::$app->sms->send($mobile, $content, $operator_id, $sent_at);
 	 */
-	public function send($phone, $content, $uid = 0){
-		if(empty($phone) || empty($content)){
-			throw new ErrorException('Phone and content must be required');
-		}
-
-		$this->phone = $phone;
-		$this->content = $content;
-		$this->setContent();
-		$status = false;
-
-		switch(strtolower($this->mode)){
+	public function send($mobile, $content, $operator_id = 0, $sent_at = 0) {
+		switch(strtolower($this->sp)) {
 			case 'luosimao':
-				$result = Luosimao::sdk($this->config)->send($this->phone, $this->content);
+				$sp = Luosimao::sdk($this->config);
+				break;
+			default:
+				throw new ErrorException('The SP service provider does not supported');
 				break;
 		}
 
-		if(isset($result) && !empty($result)){
-			$sms = new Sms;
-			$sms->phone = $this->phone;
-			$sms->content = $this->content;
-			$sms->uid = $uid;
-			$sms->status = $result['status'];
-			$sms->message = $result['message'];
-			$sms->created_at = time();
-			if($sms->save()){
-				$status = true;
-			}
-		}
+		$sms = new Sms;
+		$sms->mobile = $this->formatMobile($mobile);
+		$sms->content = $this->formatContent($content);
+		$sms->sent_at = $sent_at;
+		$sms->operator_id = $operator_id;
+		$sms->status = $this->dev || $sp->send($sms->mobile, $sms->content, $sms->sent_at) ? 1 : 0;
+		$sms->message = $sp->errmsg;
+		$sms->created_at = time();
+		$sms->save();
 
-		return $status;
+		return $sms->status;
 	}
 
 	/**
-	 * 设置短信内容
-	 * @method setContent
+	 * 格式化内容
+	 * @method formatContent
 	 * @since 0.0.1
-	 * @return {none}
-	 * @example $this->setContent();
+	 * @param {string} $content 内容
+	 * @return {string}
+	 * @example $this->formatContent($content);
 	 */
-	private function setContent(){
-		if($this->sign)$this->content = ($this->pre ? '【' . $this->sign . '】 ' : '') . $this->content . ($this->pre ? '' : ' 【' . $this->sign . '】');
+	private function formatContent($content) {
+		if($this->sign) {
+			$content = ($this->pre ? '【' . $this->sign . '】 ' : '') . $content . ($this->pre ? '' : ' 【' . $this->sign . '】');
+		}
+
+		return $content;
+	}
+
+	/**
+	 * 格式化移动号码
+	 * @method formatMobile
+	 * @since 0.0.1
+	 * @param {string} $mobile 移动号码
+	 * @return {string}
+	 * @example $this->formatMobile($mobile);
+	 */
+	private function formatMobile($mobile) {
+		$mobiles = array_unique(explode(',', trim(preg_replace('/[^\d,]/', '', $mobile), ',')));
+		$_mobiles = [];
+		foreach($mobiles as $_mobile) {
+			$_mobiles[] = $_mobile;
+		}
+
+		return implode(',', $_mobiles);
 	}
 
 }

@@ -5,9 +5,9 @@ namespace yii\sms\models;
 use Yii;
 use yii\db\ActiveRecord;
 
-class Sms extends ActiveRecord{
+class Sms extends ActiveRecord {
 
-	public static function tableName(){
+	public static function tableName() {
 		return '{{%sms}}';
 	}
 

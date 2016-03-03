@@ -2,9 +2,9 @@
 
 use yii\db\Schema;
 
-class m150923_123405_sms extends \yii\db\Migration{
+class m150923_123405_sms extends \yii\db\Migration {
 
-	public function up(){
+	public function up() {
 		$tableOptions = 'engine=innodb character set utf8';
 		if($this->db->driverName === 'mysql') {
 			$tableOptions .= ' collate utf8_unicode_ci';
@@ -12,16 +12,17 @@ class m150923_123405_sms extends \yii\db\Migration{
 
 		$this->createTable('{{%sms}}', [
 			'id' => Schema::TYPE_PK . ' comment "id"',
-			'uid' => Schema::TYPE_INTEGER . ' not null default 0 comment "操作者: 0系统, >0用户id"',
-			'phone' => Schema::TYPE_TEXT . ' not null comment "手机号"',
-			'content' => Schema::TYPE_STRING . ' not null comment "短信内容"',
+			'mobile' => Schema::TYPE_TEXT . ' not null comment "移动号码, 多个以英文逗号隔开, <=10000个"',
+			'content' => Schema::TYPE_STRING . ' not null comment "内容, <=300个字(含签名)"',
 			'status' => Schema::TYPE_BOOLEAN . ' not null default 0 comment "发送状态, 0失败, 1成功"',
 			'message' => Schema::TYPE_STRING . '(50) comment "状态信息"',
-			'created_at' => Schema::TYPE_INTEGER . ' not null comment "发送时间"',
+			'sent_at' => Schema::TYPE_INTEGER . ' not null default 0 comment "发送时间, 0立即, >0定时"',
+			'operator_id' => Schema::TYPE_INTEGER . ' not null default 0 comment "操作员: 0系统, >0用户id"',
+			'created_at' => Schema::TYPE_INTEGER . ' not null comment "创建时间"',
 		], $tableOptions . ' comment="短信发送记录"');
 	}
 
-	public function down(){
+	public function down() {
 		$this->dropTable('{{%sms}}');
 	}
 
