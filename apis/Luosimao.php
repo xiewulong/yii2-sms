@@ -161,7 +161,7 @@ class Luosimao {
 			$this->errmsg = '数据不合法';
 		} else if(isset($result['error']) && isset($result['msg'])) {
 			$this->errcode = $result['error'];
-			$this->errmsg = $this->messages[$this->errcode];
+			$this->errmsg = isset($this->messages[$this->errcode]) ? $this->messages[$this->errcode] : "Error: $this->errcode";
 			if($this->errcode == '-31') {
 				$this->hit = $result['hit'];
 			}
