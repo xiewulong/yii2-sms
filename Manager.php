@@ -58,9 +58,9 @@ class Manager {
 		$sms = new Sms;
 		$sms->mobile = $this->formatMobile($mobile);
 		$sms->content = $this->formatContent($content);
+		$sms->sent_at = $sent_at;
 		$sms->status = $this->dev || $sp->send($sms->mobile, $sms->content, $sms->sent_at) ? 1 : 0;
 		$sms->message = $this->dev ? '发送成功' : $sp->errmsg;
-		$sms->sent_at = $sent_at;
 		$sms->operator_id = $operator_id;
 		$sms->created_at = time();
 		$sms->save();
